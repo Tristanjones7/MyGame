@@ -17,7 +17,7 @@
     "StarterPlayer": {
       "StarterPlayerScripts": {
         "MovementLab": {
-          "$path": "src/client"
+          "$path": "src/client/init.client.luau"
         }
       }
     }
