@@ -70,7 +70,7 @@ function Presentation.new(character)
 	self.RightShoulder = findJoint(character, "RightUpperArm", "RightShoulder") or findJoint(character, "Torso", "Right Shoulder")
 	self.LeftShoulder = findJoint(character, "LeftUpperArm", "LeftShoulder") or findJoint(character, "Torso", "Left Shoulder")
 	self.Waist = findJoint(character, "UpperTorso", "Waist")
-	self.Neck = findJoint(character, "Head", "Neck")
+	self.Neck = findJoint(character, "Head", "Neck") or findJoint(character, "Torso", "Neck")
 
 	self.RootJoint = humanoidRootPart:FindFirstChild("RootJoint")
 	if not self.RootJoint then
@@ -137,7 +137,7 @@ function Driver:Step(dt)
 		blend(self.Neck, CFrame.Angles(config.NarutoLean * 0.7, 0, 0), w)
 	end
 
-	-- Riftborn wall-run pose: wall-side hand reaches outward/forward and root leans away.
+	-- Riftborn wall-run pose: wall-side hand reaches outward/forward.
 	if self.Weights.Wall > 0 then
 		local side = self.Flags.WallSide
 		local arm = side == 1 and self.RightShoulder or self.LeftShoulder
@@ -147,6 +147,12 @@ function Driver:Step(dt)
 
 	local rootOffset = CFrame.identity
 	local rootDirty = false
+
+	-- R6 does not have a Waist joint, so apply the Riftborn run lean at the RootJoint.
+	if self.Weights.Run > 0 and not self.Waist then
+		rootOffset *= CFrame.Angles(-config.NarutoLean * self.Weights.Run, 0, 0)
+		rootDirty = true
+	end
 
 	-- Superhero-style landing timing from Riftborn.
 	if self.LandStarted then
